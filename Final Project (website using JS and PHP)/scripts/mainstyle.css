@@ -1,0 +1,19 @@
+body{background-image:url("../bg.png"); text-align:center; font-family:helvetica;}
+.parentDiv{display:inline-block;}
+.title{font-size:1.2em; color:black; text-decoration:none;}
+/*.title:hover{text-decoration:underline;}*/
+.content{display:inline-block; margin:auto;}
+.description{display:block;}
+.uploader{font-size:0.8em; color:silver; text-decoration:none; display:block;}
+.uploader:hover{text-decoration:underline;}
+.contentContainer{text-align:left; display:inline-block;}
+.navButton{font-size:1.2em; color:white; text-decoration:none; cursor:pointer;}
+.navButton:hover{text-decoration:underline;}
+#leftMargin > .navP{margin-right:5px;}
+#rightMargin > .navP{margin-left:5px;}
+#leftMargin, #rightMargin{position:absolute; top:0px;}
+#leftMargin{text-align:right;}
+#rightMargin{text-align:left;}
+#center{background-color:white; text-align:center; border-radius:5px; border:2px outset white; box-shadow:2px 2px 2px 2px black; min-height:500px;}
+.notification{color:white; font-weight:100; display:block;}
+textarea.content{height:150px;}

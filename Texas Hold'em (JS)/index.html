@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--Jake Christensen-->
+<!--There is a very inconsistent and rare glitch that sometimes occurs a player gets a flush. I may have fixed it, 
+I don't know because it hasn't happened in a while.-->
+<!--The hands are determined exactly the way I told the computer to determine them, not neccesarilly the way they should be. 
+I'm a little sketchy on the rules of texas hold'em. -->
+<html>
+	<head>
+		<title>Texas Hold'em</title>
+		<style>
+			#playerDiv>span{width:33%; text-align:center; display:inline-block; margin-right:-4px;}
+			#playerDiv>span>img{margin-left:10px;margin-right:10px;}
+			#commandBox>div{display:none; text-align:center;}
+			#potDiv{text-align:center;}
+			#potDiv>img{margin-left:10px; margin-right:10px;}
+			#messageBox{text-align:center;}
+			#startButton
+			{
+				position: fixed;
+				top: 200px;
+				width: 200px;
+				text-align:center;
+				font-weight:100;
+				color: white;
+				border-radius: 15px;
+				font-size: 12pt;
+				padding:10px;
+				background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#333)); /* for webkit browsers */
+				background: -moz-linear-gradient(top,  #ccc,  #333); /* for firefox 3.6+ */ 
+				filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#333333'); /* for IE */
+				cursor:pointer;
+			}
+			body{font-family:arial; font-size:20pt;}
+			#gameField{opacity:.2; display:none;}
+		</style>
+		<script src="card_game.js"></script>
+		<script src="texas.js"></script>
+		<script src="winFunctions.js"></script>
+	</head>
+	<body id="body">
+	<div id="gameField">
+		<div id="messageBox"></div>
+		<div id="commandBox">
+			<div><button onclick="playerMove(1);">Bet</button><button onclick="playerMove(2);">Pass</button></div>
+			<div><button onclick="playerMove(3);">See</button><button onclick="playerMove(5);">Fold</button></div>
+			<div><input type="text" id="betInput" /><input type="button" value="submit" onclick="placeBet(parseFloat(betInputVar.value), human);" /><input type="button" value="cancel" onclick="playerMove(2);" /></div>
+		</div><br />
+		<div id="potDiv"><img /><img /><img /><img /><img /><br /><span class="money">$0</span></div><br />
+		<div id="playerDiv">
+			<span id="humanSpan">
+				Human<br />
+				<img /><img /><br /><span class="money"></span>
+			</span>
+			<span id="computerSpan">
+				Computer<br />
+				<img src="cardimages/back.png" /><img src="cardimages/back.png" /><br /><span class="money"></span>
+			</span>
+			<span id="second_computerSpan">
+				Second_computer<br />
+				<img src="cardimages/back.png" /><img src="cardimages/back.png" /><br /><span class="money"></span>
+			</span>
+		</div>
+	</div>
+		<span id="startButton" onclick="gameFieldVar.style.display = 'block'; startHand();">Click here to start the hand</span>
+		<script>
+			function Bet()
+			{
+				this.value = 0;
+				this.placer = null;
+			}
+			var human = new Player("human", 1000);
+			var comp = new Player("computer", 1000);
+			var house = new Player("second_computer", 1000);
+			var pot = new Pot("pot", 0);
+			var curDeck;
+			var human_images = document.getElementById("humanSpan").getElementsByTagName("img");
+			var comp_images = document.getElementById("computerSpan").getElementsByTagName("img");
+			var house_images = document.getElementById("second_computerSpan").getElementsByTagName("img");
+			var pot_images = document.getElementById("potDiv").getElementsByTagName("img");
+			var betInputVar = document.getElementById("betInput");
+			var moneySpans = document.getElementsByClassName("money");
+			var commandDivs = document.getElementById("commandBox").getElementsByTagName("div"); 
+			var messageBoxVar = document.getElementById("messageBox");
+			var startButtonVar = document.getElementById("startButton");
+			var gameFieldVar = document.getElementById("gameField");
+			var curBet = new Bet; 
+			function centerButton()
+			{
+				startButtonVar.style.left = (window.innerWidth/2 - 110) + "px";
+			}
+			centerButton();
+			window.onresize = function(){centerButton();}
+		</script>
+	</body>
+</html>

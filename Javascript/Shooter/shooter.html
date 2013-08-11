@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Shooter</title>
+		<style>
+			#container{margin:auto; width:600px; height:600px; margin-top:0px; border:1px solid black;}
+			#target{display:inline-block; position:relative; left:0px; top:0; width:100px;}
+			#info{text-align:center; font-family:helvetica; font-size:20pt;}
+		</style>
+		<script>
+			function decideMoveleft()
+			{
+				var distance = (parseInt(Math.random()*1000000)%251) - window["left" + "Val"]/2; 
+				makeMove("left", distance, decideSpeed());
+			}
+			function decideMovetop()
+			{
+				var distance = (parseInt(Math.random()*1000000)%251) - window["top" + "Val"]/2; 
+				makeMove("top", distance);
+			}
+			function decideSpeed()
+			{
+				return (parseInt(Math.random()*1000000)%query_params[0]) + query_params[0]/2;
+			}
+			function makeMove(direction, distance, speed)
+			{
+				if(distance > 0)
+				{	
+					window[direction + "Val"] += 2; 
+					eval("targetVar.style." + direction + " = window[direction + 'Val'] + 'px';");
+					distance--; 
+					moveTimer = setTimeout(function(){makeMove(direction, distance, speed);},speed);
+				}
+				if(distance < 0)
+				{
+					window[direction + "Val"] -= 2; 
+					eval("targetVar.style." + direction + " = window[direction + 'Val'] + 'px';");
+					distance++; 
+					moveTimer = setTimeout(function(){makeMove(direction, distance ,speed);},speed);
+				}
+				if(distance == 0)
+				{
+					clearTimeout(moveTimer);
+					return eval("decideMove"+direction+"()"); 
+				}
+			}
+			function shoot(hit, e)
+			{
+				if(shots>0 && fireReady)
+				{
+					if(hit == false)
+					{
+						fireReady = false; 
+						readyTimer = setTimeout(function(){fireReady = true}, 1500);
+						shots--; 
+						ammoSpanVar.innerHTML = "Ammo: " + shots;
+						soundVar.play();
+					}
+					else
+					{
+						checkHit(e);
+						scoreVar.innerHTML = "Score: " + points;
+					}
+				}
+			}
+			function checkHit(e)
+			{
+				var posX = e.offsetX?(e.offsetX):e.pageX-targetVar.offsetLeft;
+				var posY = e.offsetY?(e.offsetY):e.pageY-targetVar.offsetTop;
+				var distance = Math.sqrt((50-posX)*(50-posX)+(50-posY)*(50-posY)); 
+				var checkDistance = 50; 
+				while(checkDistance > 0)
+				{
+					if(checkDistance >= distance)
+					{
+						points += 12.5;
+					}
+					checkDistance -= 6.25; 
+				} 
+			}
+			function startTimer()
+			{
+				time--; 
+				if(time>0)
+				{
+					timeSpanVar.innerHTML = "Time: " + time; 
+					setTimeout(function(){startTimer();},1000); 
+				}else{
+					containerVar.style.display = "none";
+					ammoSpanVar.style.display = "none"; 
+					timeSpanVar.style.display = "none";
+					soundVar.pause();
+					reloadVar.pause(); 
+					document.getElementById("replay").style.display = "inline";
+					if(adjustScores() >= 1000)
+					{
+						if(query_params[0] > 6)
+						{
+							document.getElementById("continue").style.display = "inline";
+						}else{
+							document.getElementById("winHeader").style.display="block";
+						}
+					}
+					scoreVar.innerHTML = "Score: " + points;
+				}
+			}
+			function nextLevel(num)
+			{
+				query_params[0] -= num; 
+				window.location = "shooter.html" + buildParams();
+			}
+			function buildParams()
+			{
+				return "?difficulty=" + query_params[0] + "&lvl1score=" + query_params[1] + "&lvl2score=" + query_params[2] + "&lvl3score=" + query_params[3];
+			}
+			function adjustScores()
+			{
+				switch(query_params[0])
+				{
+					case 10:
+						var position = 1; 
+						break;
+					case 8:
+						var position = 2; 
+						break;
+					case 6:
+						var position = 3; 
+						break;
+				}
+				if(points > query_params[position])
+				{
+					document.getElementById("prevScore").innerHTML = ". You beat your previous record of " + query_params[position]+".";
+					query_params[position] = points;
+				}else{
+					document.getElementById("prevScore").innerHTML = ". High Score: " + query_params[position];	
+				}
+				return query_params[position];
+			}
+		</script>
+	</head>
+	<body ondragstart="return false;" ondrop="return false;" style="cursor:crosshair;">
+		<audio id="sound">
+			<source src="shot.mp3" type="audio/mpeg" />
+			<source src="shot.ogg" type="audio/ogg" />
+		</audio>
+		<audio id="reload">
+			<source src="reload.mp3" type="audio/mpeg" />
+			<source src="reload.ogg" type="audio/ogg" />
+		</audio>
+		<div id="container" onmousedown="shoot(false, event);">
+			<img src="target.png" id="target" onmousedown="shoot(true, event);" />
+		</div>
+		<div id="info">
+			<span id="score">Score: 0</span><span id="prevScore"></span> <span id="timeSpan">Time: 60</span> <span id="ammoSpan">Ammo: 6</span><br /> <h3 id="winHeader" style="display:none;">Congratulations! You Won!</h3> <button onclick="nextLevel(0);" id="replay" style="display:none;">Replay</button>  <button style="display:none;" id="continue" onclick="nextLevel(2);" >Continue</button>
+		</div>
+		<script>
+			var query_params = new Array();
+			if(location.search != "")
+			{ 
+				query_params = location.search.split("&");
+				for(var i = 0; i<4; i++)
+				{
+					query_params[i] = parseFloat(query_params[i].substring(query_params[i].indexOf("=")+1, query_params[i].length));
+				}
+			}
+			else
+			{
+				query_params[0] = 10, query_params[1] = 0, query_params[2] = 0, query_params[3] = 0;
+			}
+			var targetVar = document.getElementById("target");
+			var containerVar = document.getElementById("container");
+			var scoreVar = document.getElementById("score");
+			var soundVar = document.getElementById("sound");
+			var reloadVar = document.getElementById("reload");
+			soundVar.volume = .05;
+			reloadVar.volume = .05;
+			var leftVal = 0;
+			var topVal = 0; 
+			var points = 0;
+			var shots = 6; 
+			var ammoSpanVar = document.getElementById("ammoSpan");
+			var time = 60; 
+			var timeSpanVar = document.getElementById("timeSpan");
+			var fireReady = true; 
+			document.addEventListener('keydown', function(e)
+			{
+				if(e.keyCode == 82 && shots < 6)
+				{
+					shots = 6; 
+					reloadVar.play();
+					clearTimeout(readyTimer);
+					fireReady = false; 
+					setTimeout(function(){fireReady = true;}, 4000);
+					ammoSpanVar.innerHTML = "Ammo: " + shots; 
+				}
+			});
+			setTimeout(function(){startTimer();},1000); 
+			decideMoveleft();
+			decideMovetop();
+		</script>
+	</body>
+</html>

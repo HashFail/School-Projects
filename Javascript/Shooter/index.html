@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			body{font-family:helvetica;}
+			h2{text-align:center;}
+			.levelDiv{display:inline-block; width:150px; margin-right:50px; margin-left:50px; font-size:15pt; cursor:pointer; border:2px solid white; border-radius:7px;}
+			.levelDiv:hover{border:2px solid black;}
+			#container{text-align:center; }
+		</style>
+		<script>
+			function gotoLevel(selection)
+			{
+				if(query_params[selection]>=1000 || selection==1)
+				{
+					switch (selection)
+					{
+						case 1:
+							var difficulty = 10;
+							break;
+						case 2:
+							var difficulty = 8;	
+							break;
+						case 3:
+							var difficulty = 6;
+							break;
+					}
+					window.location = "shooter.html?difficulty=" + difficulty + "&lvl1score=" + query_params[1] + "&lvl2score=" + query_params[2] + "&lvl3score=" + query_params[3];
+				}
+			}
+			function setScores()
+			{
+				for(var i = 0; i<scoreSpans.length; i++)
+				{
+					scoreSpans[i].innerHTML = "High Score: " + query_params[i+1];
+					if(query_params[i+1]<1000 && i<2)
+					{
+						levelDivs[i+1].style.opacity = ".4";
+						levelDivs[i+1].style.cursor = "default";
+						levelDivs[i+1].style.border = "2px solid white";
+					}
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<h2>Select Level</h2>
+		<br /><br /><br />
+		<div id="container">
+			<div class="levelDiv" onclick="gotoLevel(1);">
+				Level 1<br />
+				<span class="scoreSpan"></span>
+			</div>
+			<div class="levelDiv" onclick="gotoLevel(2);">
+				Level 2<br />
+				<span class="scoreSpan"></span>
+			</div>
+			<div class="levelDiv" onclick="gotoLevel(3);">
+				Level 3<br />
+				<span class="scoreSpan"></span>
+			</div>
+		</div>
+		<script>
+			var query_params = new Array();
+			if(location.search != "")
+			{ 
+				query_params = location.search.split("&");
+				for(var i = 0; i<4; i++)
+				{
+					query_params[i] = parseFloat(query_params[i].substring(query_params[i].indexOf("=")+1, query_params[i].length));
+				}
+			}
+			else
+			{
+				query_params[0] = 10, query_params[1] = 0, query_params[2] = 0, query_params[3] = 0;
+			}
+			var levelDivs = document.getElementsByClassName("levelDiv");
+			var scoreSpans = document.getElementsByClassName("scoreSpan"); 
+			setScores();
+		</script>
+	</body>
+</html>
